@@ -5,7 +5,7 @@ module Circulation
     'heights', 'widths', 'startxs', 'startys' specify the height, width
     and the location left-bottom corner of each rectangle.
 """
-function rectBuildLoop(grid, heights, widths, startxs, startys)
+function rectsloop(grid, heights, widths, startxs, startys)
 	hs = zeros(Bool, grid.nx, grid.ny)
 	for (h, w, x, y) in zip(heights, widths, startxs, startys)
 		hs .= hs .|| rectangle(h, w, x, y, grid)
