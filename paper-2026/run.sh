@@ -1,0 +1,1 @@
+julia --project=../ simulation.jl $1 $2 $3 $4

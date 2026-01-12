@@ -15,9 +15,6 @@ end
 
 rectangle(height, width, startx, starty, grid) = @. (0 ≤ (grid.x - startx) ≤ width) && (0 ≤ (grid.y-starty)' ≤ height)
 
-
-
-
 """
     Compute the velocity circulation
     using the convolution of the vorcity field 'ζ' and the loop Heaviside 'hs'.
@@ -27,4 +24,12 @@ function getΓ(ζh, hsh, grid)
 	Γh = device_array(grid)(ζh .* hsh) * (grid.dx * grid.dy)
 	return grid.rfftplan \ Γh
 end
+
+"""
+	Functional Π^α[C] defined as,
+	Π^α[C] = ∬ₛ∬ₛ (-⧊)^(α/2)δ(x-x')dσdσ'
+	which proportional to the area for α = 0, and to perimeter for α = 2
+"""
+periarea(hsh,α,grid) = FourierFlows.parsevalsum(abs2.(hsh) .* grid.Krsq.^(α/2),grid)
+
 
