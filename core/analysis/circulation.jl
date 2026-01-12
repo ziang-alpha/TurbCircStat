@@ -1,7 +1,5 @@
-module Circulation
-
 """
-    Build a loop by combine a sequence of rectangular loops. 
+    Build a loop by combining a sequence of rectangular loops. 
     'heights', 'widths', 'startxs', 'startys' specify the height, width
     and the location left-bottom corner of each rectangle.
 """
@@ -22,11 +20,10 @@ rectangle(height, width, startx, starty, grid) = @. (0 < (grid.x - startx) < wid
 """
     Compute the velocity circulation
     using the convolution of the vorcity field 'ζ' and the loop Heaviside 'hs'.
-    'ζh' and 'hsh' are theri Fourier transforms respectively.
+    'ζh' and 'hsh' are their Fourier transforms respectively.
 """
 function getΓ(ζh, hsh, grid)
 	Γh = device_array(grid)(ζh .* hsh) * (grid.dx * grid.dy)
 	return grid.rfftplan \ Γh
 end
 
-end
