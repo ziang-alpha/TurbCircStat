@@ -33,3 +33,6 @@ JuliaLocalPreferences.toml
 
 # Hiden dir
 .*/
+
+# Virtual envirment for Python
+venv/
