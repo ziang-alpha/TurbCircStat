@@ -19,7 +19,7 @@ for n in 1:1024
 
 	ωh[grid.Krsq .> 8*512^2/9] .= 0
 
-	fid["vorticity"][:, :, n] = Array(ωh)
+	fid["data"][:, :, n] = Array(ωh)
 end
 
 close(fid)

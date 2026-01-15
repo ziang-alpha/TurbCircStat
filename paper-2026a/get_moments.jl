@@ -19,7 +19,7 @@ end
 
 hshs = [L_shapedloop(grid, 0.1rand(), 0.1rand(), 0.1rand(), 0.1rand()) for _ in 1:200]
 
-orders = -0.5:0.5:4
+orders = 1:10
 
 moments = map(orders) do k
 	res = zeros(length(hshs))
@@ -28,3 +28,6 @@ moments = map(orders) do k
 	end
 	res
 end
+
+@save (@__DIR__)*"/circulation_moments.jld2" hshs orders moments
+
