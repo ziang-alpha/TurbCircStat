@@ -1,4 +1,4 @@
-using FourierFlows, HDF5, JLD2, Measurements
+using FourierFlows, HDF5, JLD2, Measurements, CUDA
 include("circulation.jl")
 include("diagnostics.jl")
 include("statistics.jl")
@@ -13,6 +13,6 @@ include("statistics.jl")
 function measure(data_series)
     ndata = length(data_series)
     mean = sum(data_series) / ndata
-    var = sum(datum -> (datum-mean).^2, data_series) / ndata^2
+    var = sum(datum -> (datum - mean) .^ 2, data_series) / ndata^2
     return mean .± sqrt.(var)
 end

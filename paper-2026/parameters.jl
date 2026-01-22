@@ -10,7 +10,7 @@ L  = 2π  # domain size
 kf = ngrid / (3 * sqrt(Re))       # Forcing wavenumber 
 ν  = ε^(1 / 3) * kf^(-4 / 3) / Re    # Viscosity
 
-dev = GPU() # Device of computation: GPU() or CPU()
+dev = CPU() # Device of computation: GPU() or CPU()
 
 PATH = dirname(@__FILE__)
 
