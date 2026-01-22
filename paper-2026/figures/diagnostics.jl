@@ -1,5 +1,4 @@
-include("load_raw_data.jl")
-
+fid = h5open("diagnostics.jl", "w")
 energy_spectra = map(raw_data) do (ζhs, grid, fh)
     kr = radialk(grid)
     # Compute the averaged 2D energy spectrum
@@ -8,7 +7,7 @@ energy_spectra = map(raw_data) do (ζhs, grid, fh)
         radialspectrum(Eh, grid)
     end
     Ehr_mearsure = measure(Ehrs)
-    (kr, Ehr_mearsure)
+
 end
 
 energy_fluxes = map(raw_data) do (ζhs, grid, fh)

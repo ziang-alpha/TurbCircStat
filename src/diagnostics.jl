@@ -1,3 +1,4 @@
+using FourierFlows
 # Compute the radial wavenumbers
 radialk(grid) = begin
     fh = device_array(grid)(zeros(grid.nkr, grid.nl))
@@ -11,7 +12,7 @@ radialspectrum(fh, grid) = begin
 end
 # Compute the cumulate radial spectrum (e.g. fluxes)
 cumradialspectrum(fh, grid) = begin
-    fhr = radialspectrum(fh,grid)
+    fhr = radialspectrum(fh, grid)
     cumsum(fhr) .* 2π / grid.Lx
 end
 

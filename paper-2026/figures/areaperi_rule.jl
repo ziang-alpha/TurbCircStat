@@ -1,5 +1,3 @@
-include("load_raw_data.jl")
-
 eqarea_variance_ratio = map(raw_data) do (ζhs, grid, fh)
     dl = 2π / grid.nx
     loopsizes = (10:10:floor(Int, grid.nx / 2)) .* dl

@@ -1,3 +1,4 @@
+using CUDA, Measurements
 # Compute the probability distribution funtion for samples given by an Array
 function pdf(sp::Array, bin)
     pdf = map(bin[1:(end-1)], bin[2:end]) do l, r
@@ -41,3 +42,15 @@ end
 
 moment(sp, k) = sum(x -> x^k, sp) / length(sp)
 
+"""
+    Estimate the mean value and standard deviation of a series of data.
+    Each datum frame could be an Array or CuArray.
+    The results is given by 'mean .± sqrt.(var)'.
+    Here, '±' is provided by the Measurements.jl.
+"""
+function measure(data_series)
+    ndata = length(data_series)
+    mean = sum(data_series) / ndata
+    var = sum(datum -> (datum - mean) .^ 2, data_series) / ndata^2
+    return mean .± sqrt.(var)
+end
