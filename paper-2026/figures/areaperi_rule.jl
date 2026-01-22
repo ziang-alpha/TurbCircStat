@@ -1,6 +1,6 @@
-include((@__DIR__) * "/load_raw_data.jl")
+include("load_raw_data.jl")
 
-eqarea_variance_ratio = map(raw_data) do ζhs, grid, fh
+eqarea_variance_ratio = map(raw_data) do (ζhs, grid, fh)
     dl = 2π / grid.nx
     loopsizes = (10:10:floor(Int, grid.nx / 2)) .* dl
     loops_square = [rectsloop(grid, l, l, -π, -π) for l in loopsizes]
@@ -26,7 +26,7 @@ eqarea_variance_ratio = map(raw_data) do ζhs, grid, fh
     (loopsizes, var_ratio_measure)
 end
 
-eqperi_variance_ratio = map(raw_data) do ζhs, grid, fh
+eqperi_variance_ratio = map(raw_data) do (ζhs, grid, fh)
     dl = 2π / grid.nx
     loopsizes = (10:10:floor(Int, grid.nx / 2)) .* dl
     loops_square = [rectsloop(grid, l, l, -π, -π) for l in loopsizes]
@@ -105,5 +105,5 @@ eqperi_moment_ratio = map(order) do n
     (loopsizes ./ (180dl .- loopsizes), mom_ratio_measure)
 end
 
-@save "areaperi_rule.hld2" eqarea_variance_ratio eqperi_variance_ratio eqarea_moment_ratio eqperi_moment_ratio order
+@save (@__DIR__) * "/areaperi_rule.jld2" eqarea_variance_ratio eqperi_variance_ratio eqarea_moment_ratio eqperi_moment_ratio order
 

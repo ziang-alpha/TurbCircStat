@@ -1,4 +1,4 @@
-include((@__DIR__) * "/load_raw_data.jl")
+include("load_raw_data.jl")
 
 energy_spectra = map(raw_data) do (ζhs, grid, fh)
     kr = radialk(grid)
