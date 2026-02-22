@@ -1,5 +1,5 @@
 @time begin
-    @info "wavenumber-energy_spectra"
+	@info "wavenumber-energy_spectra"
 	group = create_group(pfile, "wavenumber-energy_spectra")
 	for (Re, datum) in rawdata
 		kr = radialk(datum.grid)
@@ -15,8 +15,8 @@
 end
 
 @time begin
-	@info "wavenumber-energy_fluxes"
-	group = create_group(pfile, "wavenumber-energy_fluxes")
+	@info "wavenumber-normalized_energy_fluxes"
+	group = create_group(pfile, "wavenumber-normalized_energy_fluxes")
 	for (Re, datum) in rawdata
 		kr = radialk(datum.grid)
 		Fhrs = map(datum.ζhs) do ζh
@@ -35,9 +35,10 @@ end
 	group = create_group(pfile, "wavenumber-enstrophy_fluxes")
 	for (Re, datum) in rawdata
 		kr = radialk(datum.grid)
+		kf = datum.grid.nx / 3sqrt(Re)
 		Fhrs = map(datum.ζhs) do ζh
 			Nh = enstrophyInjectionRate(ζh, datum.grid)
-			cumradialspectrum(Nh, datum.grid)
+			cumradialspectrum(Nh, datum.grid) ./ kf^2
 		end
 		mean, std = measure(Fhrs)
 		group["Re$(Re)/x"] = Array(kr)
@@ -73,7 +74,7 @@ end
 	end
 end
 
-@time begin 
+@time begin
 	@info "velocity-pdf:filtered"
 	group = create_group(pfile, "velocity-pdf:filtered")
 	for (Re, datum) in rawdata
@@ -100,141 +101,136 @@ end
 	end
 end
 
-# @time begin 
-# 	@info "loop_size-var_ratio:equal area"
-# 	group = create_group(pfile, "loop_size-var_ratio:equal area")
+@time begin
+	@info "loop_size-var_ratio:equal area"
+	group = create_group(pfile, "loop_size-var_ratio:equal area")
 
-# 	for (Re, datum) in rawdata
-# 		grid = datum.grid
-# 		dl = 2π / grid.nx
-# 		loopsizes = (10:10:floor(Int, grid.nx/2)) .* dl
-# 		squares = [rectsloop(grid, l, l, -π, -π) for l in loopsizes]
-# 		rects = [rectsloop(grid, 2 * l, l / 2, -π, -π) for l in loopsizes]
+	for (Re, datum) in rawdata
+		grid = datum.grid
+		dl = 2π / grid.nx
+		loopsizes = (10:10:floor(Int, grid.nx/2)) .* dl
+		squares = [rectsloop(grid, l, l, -π, -π) for l in loopsizes]
+		rects = [rectsloop(grid, 2 * l, l / 2, -π, -π) for l in loopsizes]
 
-# 		varSquares = map(squares) do hsh
-# 			vars = map(datum.fζhs) do fζh
-# 				Γ = getΓ(fζh, hsh, grid)
-# 				moment(Γ, 2)
-# 			end
-# 			mean, std = measure(vars)
-# 			mean ± std
-# 		end
+		varSquares = map(squares) do hsh
+			vars = map(datum.fζhs) do fζh
+				Γ = getΓ(fζh, hsh, grid)
+				moment(Γ, 2)
+			end
+			mean, std = measure(vars)
+			mean ± std
+		end
 
-# 		varRects = map(rects) do hsh
-# 			vars = map(datum.fζhs) do fζh
-# 				Γ = getΓ(fζh, hsh, grid)
-# 				moment(Γ, 2)
-# 			end
-# 			mean, std = measure(vars)
-# 			mean ± std
-# 		end
+		varRects = map(rects) do hsh
+			vars = map(datum.fζhs) do fζh
+				Γ = getΓ(fζh, hsh, grid)
+				moment(Γ, 2)
+			end
+			mean, std = measure(vars)
+			mean ± std
+		end
 
-# 		varRatios = varRects ./ varSquares
-# 		group["Re$(Re)/x"] = Array(loopsizes)
-# 		group["Re$(Re)/y"] = Array(Measurements.value.(varRatios))
-# 		group["Re$(Re)/Δy"] = Array(Measurements.uncertainty.(varRatios))
-# 	end
-# end
+		varRatios = varRects ./ varSquares
+		group["Re$(Re)/x"] = Array(loopsizes)
+		group["Re$(Re)/y"] = Array(Measurements.value.(varRatios))
+		group["Re$(Re)/Δy"] = Array(Measurements.uncertainty.(varRatios))
+	end
+end
 
-# @time begin
-# 	@info "loop_size-var_ratio:equal perimeter"
-# 	group = create_group(pfile, "loop_size-var_ratio:equal perimeter")
+@time begin
+	@info "loop_size-var_ratio:equal perimeter"
+	group = create_group(pfile, "loop_size-var_ratio:equal perimeter")
 
-# 	for (Re, datum) in rawdata
-# 		grid = datum.grid
-# 		dl = 2π / grid.nx
-# 		loopsizes = (10:10:floor(Int, grid.nx/2)) .* dl
-# 		squares = [rectsloop(grid, l, l, -π, -π) for l in loopsizes]
-# 		rects = [rectsloop(grid, 8l / 5, 2l / 5, -π, -π) for l in loopsizes]
+	for (Re, datum) in rawdata
+		grid = datum.grid
+		dl = 2π / grid.nx
+		loopsizes = (10:10:floor(Int, grid.nx/2)) .* dl
+		squares = [rectsloop(grid, l, l, -π, -π) for l in loopsizes]
+		rects = [rectsloop(grid, 8l / 5, 2l / 5, -π, -π) for l in loopsizes]
 
-# 		varSquares = map(squares) do hsh
-# 			vars = map(datum.fζhs) do fζh
-# 				Γ = getΓ(fζh, hsh, grid)
-# 				moment(Γ, 2)
-# 			end
-# 			mean, std = measure(vars)
-# 			mean ± std
-# 		end
+		varSquares = map(squares) do hsh
+			vars = map(datum.fζhs) do fζh
+				Γ = getΓ(fζh, hsh, grid)
+				moment(Γ, 2)
+			end
+			mean, std = measure(vars)
+			mean ± std
+		end
 
-# 		varRects = map(rects) do hsh
-# 			vars = map(datum.fζhs) do fζh
-# 				Γ = getΓ(fζh, hsh, grid)
-# 				moment(Γ, 2)
-# 			end
-# 			mean, std = measure(vars)
-# 			mean ± std
-# 		end
+		varRects = map(rects) do hsh
+			vars = map(datum.fζhs) do fζh
+				Γ = getΓ(fζh, hsh, grid)
+				moment(Γ, 2)
+			end
+			mean, std = measure(vars)
+			mean ± std
+		end
 
-# 		varRatios = varRects ./ varSquares
-# 		group["Re$(Re)/x"] = Array(loopsizes)
-# 		group["Re$(Re)/y"] = Array(Measurements.value.(varRatios))
-# 		group["Re$(Re)/Δy"] = Array(Measurements.uncertainty.(varRatios))
-# 	end
-# end
+		varRatios = varRects ./ varSquares
+		group["Re$(Re)/x"] = Array(loopsizes)
+		group["Re$(Re)/y"] = Array(Measurements.value.(varRatios))
+		group["Re$(Re)/Δy"] = Array(Measurements.uncertainty.(varRatios))
+	end
+end
 
-# @time begin
-#     Re = 4.0
-# 	datum = rawdata[Re]
-# 	@info "aspect_ratio-moments_ratio:fixed area"
-# 	group = create_group(pfile, "aspect_ratio-moments_ratio:fixed area")
+@time begin
+	Re = 4.0
+	datum = rawdata[Re]
+	@info "aspect_ratio-moments_ratio:fixed area"
+	group = create_group(pfile, "aspect_ratio-moments_ratio:fixed area")
 
-# 	grid = datum.grid
-# 	dl = 2π / grid.nx
-# 	fixarea = 8100dl^2
-# 	loopsizes = [15; 20; 30; 40; 45; 60; 90] .* dl
-# 	rects = [rectsloop(grid, l, fixarea / l, -π, -π) for l in loopsizes]
-#     orders = 2:2:10
+	grid = datum.grid
+	dl = 2π / grid.nx
+	fixarea = 8100dl^2
+	loopsizes = [15; 20; 30; 40; 45; 60; 90] .* dl
+	rects = [rectsloop(grid, l, fixarea / l, -π, -π) for l in loopsizes]
+	orders = 2:2:10
 
-#     HDF5.attributes(group)["area"] = fixarea
-#     HDF5.attributes(group)["Re"] = Re
-#     HDF5.attributes(group)["orders"] = Array(orders)
+	HDF5.attributes(group)["area"] = fixarea
 
-# 	momentsRatio = map(orders) do order
-# 		momRects = map(rects) do hsh
-# 			moms = map(datum.fζhs) do fζh
-# 				Γ = getΓ(fζh, hsh, grid)
-# 				moment(Γ, order)
-# 			end
-# 			mean, std = measure(moms)
-# 			mean ± std
-# 		end
-# 		momRects ./ last(momRects)
-# 	end
-# 	group["x"] = Array(loopsizes .^ 2 ./ fixarea)
-# 	group["y"] = Array(hcat(map(mrs->Measurements.value.(mrs), momentsRatio)...))
-#     group["Δy"] = Array(hcat(map(mrs->Measurements.uncertainty.(mrs), momentsRatio)...))
-# end
+	momentsRatio = map(orders) do order
+		momRects = map(rects) do hsh
+			moms = map(datum.fζhs) do fζh
+				Γ = getΓ(fζh, hsh, grid)
+				moment(Γ, order)
+			end
+			mean, std = measure(moms)
+			mean ± std
+		end
+		y_mea = momRects ./ last(momRects)
+		group["Re$(Re) order$(order)/x"] = Array(loopsizes .^ 2 ./ fixarea)
+		group["Re$(Re) order$(order)/y"] = Array(Measurements.value.(y_mea))
+		group["Re$(Re) order$(order)/Δy"] = Array(Measurements.uncertainty.(y_mea))
+	end
+end
 
-# @time begin
-#     Re = 3.5
-# 	datum = rawdata[Re] 
-# 	@info "aspect_ratio-moments_ratio:fixed perimeter"
-# 	group = create_group(pfile, "aspect_ratio-moments_ratio:fixed perimeter")
+@time begin
+	Re = 3.5
+	datum = rawdata[Re]
+	@info "aspect_ratio-moments_ratio:fixed perimeter"
+	group = create_group(pfile, "aspect_ratio-moments_ratio:fixed perimeter")
 
-# 	grid = datum.grid
-# 	dl = 2π / grid.nx
-# 	fixperi = 180dl
-# 	loopsizes = (10:10:90) .* dl
-# 	rects = [rectsloop(grid, l, fixperi - l, -π, -π) for l in loopsizes]
-#     orders = 2:2:10
+	grid = datum.grid
+	dl = 2π / grid.nx
+	fixperi = 180dl
+	loopsizes = (10:10:90) .* dl
+	rects = [rectsloop(grid, l, fixperi - l, -π, -π) for l in loopsizes]
+	orders = 2:2:10
 
-#     HDF5.attributes(group)["perimeter"] = fixperi
-#     HDF5.attributes(group)["Re"] = Re
-#     HDF5.attributes(group)["orders"] = Array(orders)
+	HDF5.attributes(group)["perimeter"] = fixperi
 
-# 	momentsRatio = map(orders) do order
-# 		momRects = map(rects) do hsh
-# 			moms = map(datum.fζhs) do fζh
-# 				Γ = getΓ(fζh, hsh, grid)
-# 				moment(Γ, order)
-# 			end
-# 			mean, std = measure(moms)
-# 			mean ± std
-# 		end
-# 		momRects ./ last(momRects)
-# 	end
-# 	group["x"] = Array(loopsizes .^ 2 ./ fixarea)
-# 	group["y"] = Array(hcat(map(mrs->Measurements.value.(mrs), momentsRatio)...))
-#     group["Δy"] = Array(hcat(map(mrs->Measurements.uncertainty.(mrs), momentsRatio)...))
-
-# end
+	momentsRatio = map(orders) do order
+		momRects = map(rects) do hsh
+			moms = map(datum.fζhs) do fζh
+				Γ = getΓ(fζh, hsh, grid)
+				moment(Γ, order)
+			end
+			mean, std = measure(moms)
+			mean ± std
+		end
+		y_mea = momRects ./ last(momRects)
+		group["Re$(Re) order$(order)/x"] = Array(loopsizes .^ 2 ./ fixarea)
+		group["Re$(Re) order$(order)/y"] = Array(Measurements.value.(y_mea))
+		group["Re$(Re) order$(order)/Δy"] = Array(Measurements.uncertainty.(y_mea))
+	end
+end
