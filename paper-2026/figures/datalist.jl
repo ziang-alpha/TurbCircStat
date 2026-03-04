@@ -123,9 +123,9 @@ function aspect_ratio_moments(Re, order, isarea)
         mean ± std
     end
 
-    group["Re$(Re) order$(order)/x"] = Array(aspect_ratios)
-    group["Re$(Re) order$(order)/y"] = Array(Measurements.value.(moments))
-    group["Re$(Re) order$(order)/Δy"] = Array(Measurements.uncertainty.(moments))
+    h5group["Re$(Re) order$(order)/x"] = Array(aspect_ratios)
+    h5group["Re$(Re) order$(order)/y"] = Array(Measurements.value.(moments))
+    h5group["Re$(Re) order$(order)/Δy"] = Array(Measurements.uncertainty.(moments))
 end
 
 @time for Re in keys(rawdata)
