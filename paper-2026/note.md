@@ -1,4 +1,4 @@
-Consider the integration:
+rsConsider the integration:
 $$
 \langle\varGamma_C^2\rangle_\text{eq} = \iint \frac{1}{\alpha + \beta(k_1^2+k_2^2)}\frac{\sin^2(k_1l_1)\sin^2(k_2l_2)}{k_1^2k_2^2}\mathrm{d}k_1\mathrm{d}k_2
 $$
