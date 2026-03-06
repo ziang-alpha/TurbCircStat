@@ -1,7 +1,5 @@
 using CairoMakie, HDF5, LinearAlgebra
 using FourierFlows, CUDA
-include((@__DIR__) * "/../../src/postproc/circulation.jl")
-
 mytheme = merge(
 	Theme(
 		Axis = (
@@ -54,14 +52,15 @@ mytheme = merge(
 pfile = h5open((@__DIR__) * "/postdata.h5", "r")
 cm = 96/2.54
 pt = 4/3
-Reαβs = map(keys(pfile["wavenumber-energy_spectra"])) do str
-	Re = parse(Float64, match(r"Re(\d+\.\d+)", str)[1])
-	data = pfile["wavenumber-energy_spectra"][str]
+Reynolds = [3.3; 3.5; 3.7; 3.9; 4.0; 4.02; 4.05]
+αβs = map(Reynolds) do Re
+	data = pfile["wavenumber-energy"]["$(Re)"]
 	x, y = read(data["x"]), read(data["y"])
 	αβ = hcat(y[1:300], x[1:300] .^ 2 .* y[1:300])\(2π .* x[1:300])
-	(Re, αβ[1], αβ[2])
+	(αβ[1], αβ[2])
 end
-colormaps = cgrad(:roma, length(Reαβs); categorical = true)
+
+colormaps = cgrad(:roma, length(Reynolds); categorical = true)
 
 ## Figure 1
 with_theme(mytheme) do
@@ -190,7 +189,7 @@ with_theme(mytheme) do
 			xlabel = L"\sqrt{l_1l_2}/2\pi l_\text{eq}",
 			ylabel = L"\sqrt{⟨Γ_C^2⟩/⟨Γ_□^2⟩}",
 			xscale = log10,
-			limits = (1e-2, 1e2, 0.95, 1.35),
+			limits = (1e-2, 1e2, 0.95, 1.2),
 		)
 
 		gb = GridLayout(fig[1, 2])
@@ -198,7 +197,7 @@ with_theme(mytheme) do
 			xlabel = L"l_1/l_2",
 			ylabel = L"(⟨Γ_C^p⟩/⟨Γ_□^p⟩)^{1/p}",
 			xscale = log10,
-			limits = (1e-2, 1, 1e-10, 1),
+			limits = (1e-2, 1, 0.95, 1.05),
 		)
 
 		gc = GridLayout(fig[2, 1])
@@ -206,7 +205,7 @@ with_theme(mytheme) do
 			xlabel = L"(l_1 + l_2)/4\pi l_\text{eq}",
 			ylabel = L"\sqrt{⟨Γ_C^2⟩/⟨Γ_□^2⟩}",
 			xscale = log10,
-			limits = (1e-2, 1e2, 0.55, 1.05),
+			limits = (1e-2, 1e2, 0.75, 1.05),
 		)
 
 		gd = GridLayout(fig[2, 2])
@@ -214,7 +213,7 @@ with_theme(mytheme) do
 			xlabel = L"l_1/l_2",
 			ylabel = L"(⟨Γ_C^p⟩/⟨Γ_□^p⟩)^{1/p}",
 			xscale = log10,
-			limits = (3.2, 4.1, 1, 10.0^1.5),
+			limits = (1e-2, 1, 0.95, 1.05),
 		)
 
 		for (gl, lb) in zip([ga, gb, gc, gd], ["(a)", "(b)", "(c)", "(d)"])
@@ -246,6 +245,30 @@ with_theme(mytheme) do
 			scatter!(axc, x, y; color = c)
 		end
 	end
-	
+	markers = [:circle, :utriangle, :dtriangle, :rect, :diamond]
+	for (data, str, mk) in zip(pfile["aspect_ratio-moments_ratio:fixed area"], keys(pfile["aspect_ratio-moments_ratio:fixed area"]), markers)
+		N = parse(Float64, match(r"Re(\d+\.\d+) order(\d+)", str)[2])
+		x, y = read(data["x"]), (read(data["y"])) .^ (1/N)
+		scatter!(axb, x, y;
+			strokecolor = colormaps[7],
+			color = :transparent,
+			strokewidth = 0.5,
+			marker = mk,
+			label = "$(N)",
+		)
+	end
+
+	for (data, str, mk) in zip(pfile["aspect_ratio-moments_ratio:fixed perimeter"], keys(pfile["aspect_ratio-moments_ratio:fixed area"]), markers)
+		N = parse(Float64, match(r"Re(\d+\.\d+) order(\d+)", str)[2])
+		x, y = read(data["x"]), (read(data["y"])) .^ (1/N)
+		scatter!(axd, x, y;
+			strokecolor = colormaps[2],
+			color = :transparent,
+			strokewidth = 0.5,
+			marker = mk,
+			label = "$(N)",
+		)
+	end
+
 	save((@__DIR__) * "/areaperi.pdf", fig)
 end
