@@ -109,17 +109,20 @@ with_theme(mytheme) do
 
 		axct_in = Axis(gc[1, 1];
 			height = Relative(0.4),
-			width = Relative(0.5),
+			width = Relative(0.6),
 			halign = 0.1,
-			valign = 0.14,
+			valign = 0.15,
 			xscale = log10,
 			xticklabelsvisible = false,
 			yticklabelsvisible = false,
-			limits = (1, 16, -0.01, 0.005),
-			xticks = 2 .^ (0:2:8),
-			yticks = -0.01:0.01:0.01,
+			xticksvisible = false,
+			xminorticksvisible = false,
+			yticksvisible = false,
+			yminorticksvisible = false,
+			spinewidth = 0.7,
+			limits = (2, 32, -1e-2, 5e-3),
 			xminorticks = IntervalsBetween(3),
-			ytickformat = values -> [L"%$(round(Int, 100*v))%" for v in values]
+			ytickformat = values -> [L"%$(round(Int, 100*v))%" for v in values],
 		)
 		axcb = Axis(gc[2, 1];
 			xlabel = L"k",
@@ -129,6 +132,23 @@ with_theme(mytheme) do
 			xticks = 2 .^ (0:2:8),
 			yticks = -0.2:0.2:0.6,
 			xminorticks = IntervalsBetween(3),
+		)
+		axcb_in = Axis(gc[2, 1];
+			height = Relative(0.4),
+			width = Relative(0.6),
+			halign = 0.1,
+			valign = 0.75,
+			xscale = log10,
+			xticklabelsvisible = false,
+			yticklabelsvisible = false,
+			xticksvisible = false,
+			xminorticksvisible = false,
+			yticksvisible = false,
+			yminorticksvisible = false,
+			spinewidth = 0.7,
+			limits = (2, 32, -1e-4, 5e-5),
+			xminorticks = IntervalsBetween(3),
+			ytickformat = values -> [L"%$(round(Int, 100*v))%" for v in values],
 		)
 		rowgap!(gc, 8)
 
@@ -192,6 +212,7 @@ with_theme(mytheme) do
 			lines!(axct, x1, y1; color = c)
 			lines!(axct_in, x1, y1; color = c)
 			lines!(axcb, x2, y2; color = c)
+			lines!(axcb_in, x2, y2; color = c)
 		end
 
 		x = [Re for Re in Reynolds if αβs[Re][1] > 0 && αβs[Re][2] > 0]
@@ -213,18 +234,55 @@ with_theme(mytheme) do
 		lines!(axa, 2:64, 1e-1 .* (2:64) .^ (-1); linestyle = :dash, color = :blue)
 		text!(axa, 16, 1e-5; text = L"k", color = :red)
 		text!(axa, 16, 1e-2; text = L"k^{-1}", color = :blue)
+		bracket!(axct, 2, 0, 32, 0;
+			offset = 2,
+			style = :square,
+			orientation = :up,
+			linewidth = 0.5,
+			width = 3,
+			text = "zoom in",
+			fontsize = 6,
+		)
+		bracket!(axcb, 2, 0, 32, 0;
+			offset = 2,
+			style = :square,
+			orientation = :down,
+			linewidth = 0.5,
+			width = 3,
+			text = "zoom in",
+			fontsize = 6,
+		)
+		bracket!(axct, 0.65, 0.36, 0.65, 0.1;
+			space = :relative,
+			offset = 0,
+			style = :square,
+			orientation = :up,
+			linewidth = 0.5,
+			width = 3,
+			text = "1%",
+			fontsize = 6,
+		)
 
-		lines!(axct, [1,1.45],[-0.01,-0.11]; color = :black, linewidth = 0.5)
-		lines!(axct, [16,33],[-0.01,-0.11]; color = :black, linewidth = 0.5)
-
+		bracket!(axcb, 0.65, 0.72, 0.65, 0.46;
+			space = :relative,
+			offset = 0,
+			style = :square,
+			orientation = :up,
+			linewidth = 0.5,
+			width = 3,
+			text = "1‱",
+			fontsize = 6,
+		)
 
 		xref = -7:0.05:7
 		yref = @. exp(-xref^2/2)/sqrt(2π)
 		lines!(axb, xref, yref; linestyle = :dashdot, color = :black)
 
 
-		hlines!(axcb, 0; linestyle = :dashdot, linewidth = 1, color = :black)
-		hlines!(axct, 0; linestyle = :dashdot, linewidth = 1, color = :black)
+		hlines!(axcb, 0; linestyle = :dashdot,linewidth = 1, color = :black)
+		hlines!(axct, 0; linestyle = :dashdot,linewidth = 1, color = :black)
+		hlines!(axcb_in, 0; linestyle = :dashdot,linewidth = 1, color = :black)
+		hlines!(axct_in, 0; linestyle = :dashdot,linewidth = 1, color = :black)
 
 
 		Legend(gd[1, 1],
