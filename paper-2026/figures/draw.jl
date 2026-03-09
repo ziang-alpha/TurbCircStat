@@ -332,7 +332,7 @@ with_theme(mytheme) do
     begin
         ga = GridLayout(fig[1, 1])
         axa = Axis(ga[1, 1];
-            xlabel=L"\sqrt{l_1l_2}/2\pi l_\text{eq}",
+            xlabel=L"\sqrt{A_C}/2\pi l_\text{eq}",
             ylabel=L"\sqrt{⟨Γ_C^2⟩/⟨Γ_□^2⟩}",
             xscale=log10,
             limits=(1e-2, 1e2, 0.95, 1.2),
@@ -353,7 +353,7 @@ with_theme(mytheme) do
 
         gc = GridLayout(fig[2, 1])
         axc = Axis(gc[1, 1];
-            xlabel=L"(l_1 + l_2)/4\pi l_\text{eq}",
+            xlabel=L"L_C/8\pi l_\text{eq}",
             ylabel=L"\sqrt{⟨Γ_C^2⟩/⟨Γ_□^2⟩}",
             xscale=log10,
             limits=(1e-2, 1e2, 0.75, 1.05),
@@ -453,7 +453,7 @@ with_theme(mytheme) do
 
         axislegend(axb; orientation=:horizontal, colgap=2, patchlabelgap=0, valign=0, halign=0, padding=0, nbanks=2)
         leq = sqrt(αβs[4.04][2] / αβs[4.04][1])
-        text!(axb, 0.5, 0.85; text=L"{A_C} = %$(round((90/1024/leq)^2; digits = 5))A_\text{eq}",
+        text!(axb, 0.5, 0.85; text=L"{A_C} = %$(round((90/1024/leq)^2; digits = 5))\times 4\pi^2 l_\text{eq}^2",
             space=:relative,
             align=(:center, :bottom),
         )
@@ -468,7 +468,7 @@ with_theme(mytheme) do
 
         axislegend(axd; orientation=:horizontal, colgap=2, patchlabelgap=0, valign=0, halign=0, padding=0, nbanks=2)
         leq = sqrt(αβs[3.5][2] / αβs[3.5][1])
-        text!(axd, 0.5, 0.85; text=L"L_C = %$(round((90/1024/leq); digits = 3))L_\text{eq}", space=:relative, align=(:center, :bottom))
+        text!(axd, 0.5, 0.85; text=L"L_C = %$(round((90/1024/leq); digits = 3))\times 8\pi l_\text{eq}", space=:relative, align=(:center, :bottom))
         text!(axd, 0.07, 0.25; text=L"Re = 3.5",
             space=:relative,
             align=(:left, :bottom),
