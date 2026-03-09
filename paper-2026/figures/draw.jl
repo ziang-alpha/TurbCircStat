@@ -211,8 +211,8 @@ with_theme(mytheme) do
             scatter!(axb, x ./ std, y .* std;
                 strokecolor=c,
                 color=:white,
-                strokewidth=0.5,
-                markersize=3,
+                strokewidth=1,
+                markersize=5,
             )
             lines!(axb, x ./ std, y .* std;
                 color=c,
@@ -309,7 +309,7 @@ with_theme(mytheme) do
 
 
         Legend(gb[1, 1],
-            [LineElement(color=c, linestyle=nothing) for c in colormaps],
+            [ [LineElement(color=c, linestyle=nothing), MarkerElement(marker = :circle, markersize = 5, color = :white, strokecolor = c, strokewidth = 1)] for c in colormaps],
             ["$(Re)" for Re in Reynolds];
             height=Relative(0.55),
             width=Relative(0.75),
