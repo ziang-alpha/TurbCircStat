@@ -106,6 +106,7 @@ with_theme(mytheme) do
             xticklabelsvisible=false,
             xticks=2 .^ (0:2:8),
             yticks=-0.6:0.2:0.2,
+            yticklabelpad = 2,
             xminorticks=IntervalsBetween(3),
         )
 
@@ -132,7 +133,8 @@ with_theme(mytheme) do
             xscale=log10,
             limits=(1, 512, -0.3, 0.6),
             xticks=2 .^ (0:2:8),
-            yticks=-0.2:0.2:0.6,
+            yticks=-0.2:0.2:0.4,
+            yticklabelpad = 2,
             xminorticks=IntervalsBetween(3),
         )
         axcb_in = Axis(gc[2, 1];
@@ -536,17 +538,19 @@ with_theme(mytheme) do
             xscale=log10,
             yscale=log10,
             xticks=10.0 .^ (-2:2),
+            yticks=[1,1e10,1e20],
             xminorticks=IntervalsBetween(9),
             yminorticks=10.0 .^ (0:30),
             limits=(5e-3, 1e2, 1e-2, 1e30),
             xtickformat=values -> [L"10^{%$(round(Int, log10(v)))}" for v in values],
+            ytickformat=values -> [L"10^{%$(round(Int, log10(v)))}" for v in values],
         )
 
         for (gl, lb) in zip([ga, gb], ["(a)", "(b)"])
             Label(gl[1, 1, TopLeft()], lb;
                 fontsize=10,
                 font=:bold,
-                padding=(0, 22, -10, 0),
+                padding=(0, 16, -10, 0),
             )
         end
 
