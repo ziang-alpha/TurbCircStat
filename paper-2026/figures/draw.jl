@@ -490,7 +490,6 @@ with_theme(mytheme) do
                 sum(x -> x^2, Γ)
             end
             vars_ratio = vars ./ vars[end]
-            @show vars_ratio
             lines!(axb, aspect_ratios, sqrt.(vars_ratio); linestyle=:dash, color=:purple)
         end
 
@@ -506,7 +505,6 @@ with_theme(mytheme) do
                 sum(x -> x^2, Γ)
             end
             vars_ratio = vars ./ vars[end]
-            @show vars_ratio
             lines!(axd, aspect_ratios, sqrt.(vars_ratio); linestyle=:dash, color=:purple)
         end
 
