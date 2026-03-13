@@ -38,4 +38,5 @@ JuliaLocalPreferences.toml
 # Virtual envirment for Python
 venv/
 
+.DS_Store
 
